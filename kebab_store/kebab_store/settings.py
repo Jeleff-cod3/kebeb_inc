@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'kebab_inc.urls'
+ROOT_URLCONF = 'kebab_store.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +67,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'kebab_inc.wsgi.application'
+WSGI_APPLICATION = 'kebab_store.wsgi.application'
 
 
 # Database
