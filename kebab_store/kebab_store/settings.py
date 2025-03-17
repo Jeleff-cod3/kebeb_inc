@@ -37,7 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'kebab_order'
+    'kebab_order',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
