@@ -2,9 +2,6 @@ from django.db import models
 
 # Create your models here.
 
-class Type(models.Model):
-    type = models.CharField(max_length=50)
-
 
 class Ingredients(models.Model):
     name = models.CharField(max_length=50)
@@ -15,7 +12,11 @@ class Ingredients(models.Model):
 
 
 class Kebabs(models.Model):
-    type = models.ForeignKey(Type, on_delete=models.CASCADE, null=True, related_name="kebab")
+    type_lsit = {
+        "B": "Beef",
+        "C": "Chicken"
+    }
+    type = models.CharField(max_length=30, choices=type_lsit)
     ingredients = models.ManyToManyField(Ingredients)
     
     price = 4
