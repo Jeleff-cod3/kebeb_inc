@@ -76,7 +76,7 @@ class OrderListView(ListAPIView):
 class OrderCreateView(CreateAPIView):
     """Creates an order and kebabs at the same time."""
     serializer_class = OrderSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
         
     def post(self, request):
         serializer = OrderSerializer(data=request.data)
