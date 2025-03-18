@@ -21,7 +21,6 @@ export default function SignUpPage() {
           username: formData.username,
           email: formData.username,
           password: formData.password,
-          password2: formData.password2,
         }),
       });
 
