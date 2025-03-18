@@ -38,10 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'kebab_order',
-    'rest_framework'
+    'corsheaders',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -101,10 +103,16 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000/",  # Allow frontend to access the backend
+    "http://localhost:3000",  # Allow frontend to access the backend
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',
+    ]
+}
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
