@@ -2,13 +2,16 @@ from rest_framework import serializers
 
 from .models import Ingredients, Kebabs, Order
 
+
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredients
         fields = ['id', 'name', 'price']
 
+
 class KebabSerializer(serializers.ModelSerializer):
-    ingredients = serializers.PrimaryKeyRelatedField(queryset=Ingredients.objects.all(), many=True)
+    ingredients = serializers.PrimaryKeyRelatedField(
+        queryset=Ingredients.objects.all(), many=True)
 
     class Meta:
         model = Kebabs
@@ -22,27 +25,34 @@ class KebabSerializer(serializers.ModelSerializer):
         kebab.save()  # Save to update price
         return kebab
 
+
 class OrderSerializer(serializers.ModelSerializer):
-    kebabs = KebabSerializer(many=True)  # Allow creating kebabs inside the order
+    kebabs = KebabSerializer(many=True)
 
     class Meta:
         model = Order
         fields = ['id', 'kebabs', 'total_price', 'user']
 
     def create(self, validated_data):
-        """Create an order with kebabs."""
-        kebabs_data = validated_data.pop('kebabs', [])  # Extract kebab data
-        order = Order.objects.create()  # Create order first
+        kebabs_data = validated_data.pop('kebabs', [])
+
+        # Create order without calling calculate_total_price
+        order = Order.objects.create()
 
         # Create kebabs and add them to the order
+        kebabs_created = []
         for kebab_data in kebabs_data:
             ingredients = kebab_data.pop('ingredients', [])
             kebab = Kebabs.objects.create(**kebab_data)
             kebab.ingredients.set(ingredients)
             kebab.save()
-            order.kebabs.add(kebab)
+            kebabs_created.append(kebab)
 
-        # Update order's total price
+        # Add kebabs to order
+        order.kebabs.set(kebabs_created)
+
+        # Now safely calculate total price
         order.total_price = order.calculate_total_price()
-        order.save()
+        order.save(update_fields=['total_price'])
+
         return order
