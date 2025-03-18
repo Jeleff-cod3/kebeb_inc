@@ -13,13 +13,6 @@ export default function Home() {
           Order now
         </button>
       </Link>
-      <Image
-        src="/dunenigga.jpg" // Ensure this path is correct, and the image is in the public folder
-        alt="kebab"
-        height={500}
-        width={500}
-        className="mt-8" // Adds margin to the image for spacing
-      />
     </div>
   );
 }

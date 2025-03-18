@@ -7,20 +7,31 @@ export default function Order() {
   const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/ingredients-list")
-      .then((response) => response.json())
-      .then((data) => setIngredients(data))
-      .catch((error) => console.error("Error fetching ingredients:", error));
+    async function fetchData() {
+      try {
+        const response = await fetch("http://127.0.0.1:8000/api/kebab-add");
+        const data = await response.json();
+        setIngredients(data.ingredients);
+      } catch (error) {
+        console.log("Error nigga");
+      }
+    }
+
+    fetchData();
   }, []);
 
-  const handleIngredientChange = (ingredient) => {
-    const isSelected = selectedIngredients.some((i) => i.id === ingredient.id);
-    let updatedIngredients = isSelected
-      ? selectedIngredients.filter((i) => i.id !== ingredient.id)
-      : [...selectedIngredients, ingredient];
-    setSelectedIngredients(updatedIngredients);
-    setTotalPrice(
-      updatedIngredients.reduce((sum, i) => sum + parseFloat(i.price), 0)
+  const handleIngridientSelection = (ingredient) => {
+    setSelectedIngredients((prevSelected) => {
+      if (prevSelected.includes(ingredient)) {
+        return prevSelected.filter((ing) => ing !== ingredient);
+      } else {
+        return [...prevSelected, ingredient];
+      }
+    });
+    setTotalPrice((prevPrice) =>
+      selectedIngredients.includes(ingredient)
+        ? prevPrice - ingredient.prevPrice
+        : prevPrice + ingredient.price
     );
   };
 }
