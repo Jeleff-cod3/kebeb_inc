@@ -29,5 +29,18 @@ class Kebabs(models.Model):
        
        
 class Order(models.Model):
-    pass
+    kebabs = models.ManyToManyField(Kebabs)  # Each order can have multiple kebabs
+    total_price = models.FloatField(default=0)  # Store total price
+
+    def calculate_total_price(self):
+        """Calculate total price from all kebabs in the order."""
+        return sum(kebab.price for kebab in self.kebabs.all())
+
+    def save(self, *args, **kwargs):
+        """Update total price before saving the order."""
+        self.total_price = self.calculate_total_price()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Order {self.id} - Total Price: ${self.total_price}"
     
