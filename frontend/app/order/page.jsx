@@ -24,11 +24,14 @@ export default function OrderPage() {
   const handleSubmitOrder = async () => {
     if (orders.kebabs.length === 0) return;
 
+    const accessToken = localStorage.getItem('access_token');
+
     try {
       const response = await fetch('http://localhost:8000/api/order-create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`,
         },
         body: JSON.stringify(orders),
       });
@@ -39,7 +42,8 @@ export default function OrderPage() {
         alert('Order successfully placed!');
         router.push('/');
       } else {
-        console.error('Failed to submit order');
+        const data = await response.json();
+        alert(`Order Failed: ${data.detail}`);
       }
     } catch (error) {
       console.error('Error submitting order:', error);
@@ -52,25 +56,37 @@ export default function OrderPage() {
       {orders.kebabs.length === 0 ? (
         <p className="text-lg">No burritos/kebabs added yet!</p>
       ) : (
-        <ul className="w-full max-w-lg bg-white p-4 shadow rounded-lg">
-          {orders.kebabs.map((kebab, index) => (
-            <li key={index} className="flex justify-between p-2 border-b">
-              <span>{kebab.type} Kebab</span>
-              <span className="font-bold">${kebab.price.toFixed(2)}</span>
-            </li>
-          ))}
+        <div className="w-full max-w-lg bg-white p-4 shadow rounded-lg">
+          <ul>
+            {orders.kebabs.map((kebab, index) => (
+              <li key={index} className="flex justify-between p-2 border-b">
+                <span>{kebab.type} Kebab</span>
+                <span className="font-bold">${kebab.price.toFixed(2)}</span>
+              </li>
+            ))}
+          </ul>
           <h3 className="text-lg font-semibold mt-4">Total Price: ${orders.total_price.toFixed(2)}</h3>
-        </ul>
+        </div>
       )}
+
       <div className="mt-4 flex gap-4">
-        <button onClick={handleScrapOrder} className="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600">
+        <button
+          onClick={handleScrapOrder}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600"
+        >
           Scrap Order & Go Home
         </button>
-        <button onClick={handleCreateNewBurrito} className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600">
+        <button
+          onClick={handleCreateNewBurrito}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600"
+        >
           Create New Burrito
         </button>
         {orders.kebabs.length > 0 && (
-          <button onClick={handleSubmitOrder} className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600">
+          <button
+            onClick={handleSubmitOrder}
+            className="px-4 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600"
+          >
             Submit Order
           </button>
         )}
