@@ -1,8 +1,5 @@
 from rest_framework import serializers
 
-from .models import Kebabs, Ingredients, Order
-
-from rest_framework import serializers
 from .models import Ingredients, Kebabs, Order
 
 class IngredientSerializer(serializers.ModelSerializer):
@@ -30,7 +27,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'kebabs', 'total_price']
+        fields = ['id', 'kebabs', 'total_price', 'user']
 
     def create(self, validated_data):
         """Create an order with kebabs."""

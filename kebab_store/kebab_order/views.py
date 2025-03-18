@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import status
+from rest_framework import status, permissions
 from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -76,4 +76,11 @@ class OrderListView(ListAPIView):
 class OrderCreateView(CreateAPIView):
     """Creates an order and kebabs at the same time."""
     serializer_class = OrderSerializer
+    permission_classes = [permissions.IsAuthenticated]
         
+    def post(self, request):
+        serializer = OrderSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=self.request.user)
+            return Response({"message": "Order made successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

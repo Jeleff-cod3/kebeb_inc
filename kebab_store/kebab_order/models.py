@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -18,17 +19,18 @@ class Kebabs(models.Model):
     }
     type = models.CharField(max_length=30, choices=type_lsit)
     ingredients = models.ManyToManyField(Ingredients)
-    price = models.FloatField(default=4)  # Store price in the DB
+    price = models.FloatField(default=6)  # Store price in the DB
 
     def save(self, *args, **kwargs):
         """Save the kebab object and update price after saving ingredients."""
         super().save(*args, **kwargs)  # Save first to assign an ID (needed for ManyToMany)
         ingredient_cost = sum(ingredient.price for ingredient in self.ingredients.all())
-        self.price = 4 + ingredient_cost
+        self.price = 6 + ingredient_cost
         super().save(update_fields=["price"])  # Save again to update the price
        
        
 class Order(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     kebabs = models.ManyToManyField(Kebabs)  # Each order can have multiple kebabs
     total_price = models.FloatField(default=0)  # Store total price
 
