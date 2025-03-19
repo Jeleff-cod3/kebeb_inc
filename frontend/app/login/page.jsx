@@ -1,4 +1,3 @@
-// pages/login.js
 'use client';
 import Link from "next/link";
 import { useState } from 'react';
@@ -35,6 +34,16 @@ export default function LoginPage() {
     } catch (error) {
       console.error('Error during login:', error);
     }
+  };
+
+  // ✅ Google Login Flow (Now Uses Google's API)
+  const handleGoogleLogin = () => {
+    const clientId = "YOUR_GOOGLE_CLIENT_ID"; // REPLACE THIS
+    const redirectUri = "http://localhost:3000/google-callback"; // REPLACE IF DIFFERENT
+    const scope = "openid email profile";
+    const responseType = "token id_token";
+
+    window.location.href = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&response_type=${responseType}&prompt=select_account`;
   };
 
   return (
@@ -75,6 +84,17 @@ export default function LoginPage() {
             Sign up
           </Link>
         </p>
+
+        {/* ✅ Google Login Button */}
+        <div className="mt-6 text-center">
+          <button
+            onClick={handleGoogleLogin}
+            className="w-full bg-red-500 text-white font-semibold px-4 py-3 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300"
+          >
+            Log in with Google
+          </button>
+        </div>
+
       </div>
     </div>
   );

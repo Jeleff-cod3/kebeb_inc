@@ -4,6 +4,8 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAP
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage, get_connection
@@ -15,8 +17,12 @@ from django.core.signing import Signer, BadSignature
 from .serializers import UserSerializer,SignUpSerializer
 from django.conf import settings  # ✅ Import Django settings
 
+from google.auth.transport import requests
+from google.oauth2 import id_token
+
 
 UserPishki = get_user_model()
+
 
 class UserLoginView(APIView):
     permission_classes = [AllowAny]  # Allow anyone to login
@@ -50,6 +56,37 @@ class UserList(ListAPIView):
     serializer_class = UserSerializer
 
 
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        token = request.data.get("id_token")
+
+        if not token:
+            return Response({"error": "ID token is required"}, status=400)
+
+        try:
+            # Verify Google Token
+            google_data = id_token.verify_oauth2_token(token, requests.Request(), settings.GOOGLE_CLIENT_ID)
+
+            email = google_data.get("email")
+            username = google_data.get("name")
+            google_id = google_data.get("sub")  # Google user ID
+
+            # Check if the user exists
+            user, created = User.objects.get_or_create(email=email, defaults={"username": username})
+
+            if created:
+                user.is_active = True
+                user.save()
+
+            return Response({"message": "Login successful", "user": {"email": user.email, "username": user.username}}, status=200)
+
+        except ValueError:
+            return Response({"error": "Invalid Google token"}, status=400)
+
+
+
 class SendVerificationEmailView(APIView):
     permission_classes = [AllowAny]  # Allow anonymous access
     
@@ -59,31 +96,30 @@ class SendVerificationEmailView(APIView):
             email = serializer.validated_data["email"]
             username = serializer.validated_data["username"]
             password = serializer.validated_data["password"]
-            user = User.objects.filter(username=username).first()
 
             if User.objects.filter(username=username).exists():
               return Response({"error": "Username already exists!"}, status=status.HTTP_400_BAD_REQUEST)
             
-            # ✅ Use Django's signing for the token
+            # Use Django's signing for the token
             signer = Signer()
             token = signer.sign(email)
 
-            # ✅ Encode email for URL
+            # Encode email for URL
             uid = urlsafe_base64_encode(force_bytes(email))
 
-            # ✅ Construct the verification link (Removed password for security)
+            # Construct the verification link (Removed password for security)
             verification_link = f"http://{get_current_site(request).domain}/auth/verify/{uid}/{token}/{username}/{password}"
 
             connection = get_connection(
                 backend="django.core.mail.backends.smtp.EmailBackend",
-                host=settings.EMAIL_HOST,  # ✅ Use settings.py
+                host=settings.EMAIL_HOST,
                 port=settings.EMAIL_PORT,
                 username=settings.EMAIL_HOST_USER,
                 password=settings.EMAIL_HOST_PASSWORD,
                 use_tls=settings.EMAIL_USE_TLS,
             )
 
-
+            #fancy verification button
             email_body = f"""
              <html>
                 <body>
@@ -110,7 +146,7 @@ class SendVerificationEmailView(APIView):
                 [email],
                 connection=connection,
             )
-            email_message.content_subtype = "html"  # ✅ Set email format to HTML
+            email_message.content_subtype = "html"  # Set email format to HTML
             email_message.send()
                     
             return Response({"message": "Verification email sent!"}, status=status.HTTP_200_OK)
@@ -125,19 +161,19 @@ class VerifyEmailView(APIView):
         try:
             email = urlsafe_base64_decode(uidb64).decode()
 
-            # ✅ Verify the token
+            # Verify the token
             signer = Signer()
             verified_email = signer.unsign(token)  # Raises BadSignature if invalid
 
             if verified_email != email:
                 return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
-            # ✅ Create & activate the user after verification
+            # Create & activate the user after verification
             user = UserPishki.objects.create_user(username=username, email=email,password = password )
             user.is_active = True
             user.save()
 
-            # ✅ Redirect to frontend login
+            # Redirect to frontend login
             return redirect("http://localhost:3000/login")
 
         except BadSignature:

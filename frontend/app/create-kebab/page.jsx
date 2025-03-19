@@ -48,7 +48,7 @@ export default function CreateBurritoPage() {
 
     return (
         <div className="min-h-screen bg-black text-white flex flex-col items-center p-6">
-            <h1 className="text-5xl font-bold tracking-wide mb-6">🔥 Craft Your Burrito 🔥</h1>
+            <h1 className="text-5xl font-bold tracking-wide mb-6">🔥 Craft Your Kebbab 🔥</h1>
 
             <button
                 onClick={() => router.push('/order')}
