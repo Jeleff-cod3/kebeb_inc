@@ -6,11 +6,11 @@ export default function HomePage() {
     const router = useRouter();
 
     return (
-        <div className="min-h-screen bg-black text-white flex flex-col">
+        <div className="min-h-screen bg-stone-950 text-white flex flex-col">
             {/* Navbar */}
             <nav className="w-full flex items-start justify-between px-8 py-4">
                 <button
-                    className="bg-gray-200 text-black px-6 py-2 rounded-full font-semibold"
+                    className="bg-green-200 text-black px-6 py-2 rounded-full font-semibold"
                     onClick={() => router.push('/menu')}
                 >
                     MENU
@@ -23,13 +23,13 @@ export default function HomePage() {
                 <div className="flex gap-4">
                     <button
                         onClick={() => router.push('/order')}
-                        className="px-6 py-2 bg-gray-200 text-black rounded-full font-semibold"
+                        className="px-6 py-2 bg-green-200 text-black rounded-full font-semibold"
                     >
                         CART
                     </button>
                     <button
                         onClick={() => router.push('/profile')}
-                        className="px-6 py-2 bg-gray-200 text-black rounded-full font-semibold"
+                        className="px-6 py-2 bg-green-200 text-black rounded-full font-semibold"
                     >
                         PROFILE
                     </button>
@@ -38,7 +38,7 @@ export default function HomePage() {
 
             <main className="flex-grow flex justify-center items-center px-10 py-6">
                 <div className="flex gap-10 items-center">
-                    <div className="bg-gray-200 text-black p-8 rounded-xl shadow-xl max-w-xs">
+                    <div className="bg-green-200 text-black p-8 rounded-xl shadow-xl max-w-xs">
                         <p className="font-semibold text-lg">
                             GRILLZILLA WAS FOUNDED BY AHMED ALI, A KEBAB MASTER WHOSE PASSION FOR PERFECTING THE DISH WAS PASSED DOWN THROUGH GENERATIONS.
                             THE SECRET TO THEIR SUCCESS? A DEDICATION TO FLAVOR AND A LOVE FOR THE CRAFT.
