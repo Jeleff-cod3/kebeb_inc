@@ -15,5 +15,5 @@ urlpatterns = [
 
     #verify email
     path("sign-up/", views.SendVerificationEmailView.as_view(), name="send_verification_email"),
-    path("verify/<uidb64>/<token>/<username>/<password>/", views.VerifyEmailView.as_view(), name="verify_email"),
+    path("verify/<uidb64>/<token>/<username>/<password>", views.VerifyEmailView.as_view(), name="verify_email"),
 ]

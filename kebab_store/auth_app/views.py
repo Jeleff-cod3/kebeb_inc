@@ -59,7 +59,11 @@ class SendVerificationEmailView(APIView):
             email = serializer.validated_data["email"]
             username = serializer.validated_data["username"]
             password = serializer.validated_data["password"]
+            user = User.objects.filter(username=username).first()
 
+            if User.objects.filter(username=username).exists():
+              return Response({"error": "Username already exists!"}, status=status.HTTP_400_BAD_REQUEST)
+            
             # ✅ Use Django's signing for the token
             signer = Signer()
             token = signer.sign(email)
@@ -68,7 +72,7 @@ class SendVerificationEmailView(APIView):
             uid = urlsafe_base64_encode(force_bytes(email))
 
             # ✅ Construct the verification link (Removed password for security)
-            verification_link = f"http://{get_current_site(request).domain}/auth/verify/{uid}/{token}/{username}/"
+            verification_link = f"http://{get_current_site(request).domain}/auth/verify/{uid}/{token}/{username}/{password}"
 
             connection = get_connection(
                 backend="django.core.mail.backends.smtp.EmailBackend",
@@ -80,15 +84,35 @@ class SendVerificationEmailView(APIView):
             )
 
 
+            email_body = f"""
+             <html>
+                <body>
+                    <p>Hello {username},</p>
+                    <p>Click the button below to verify your email:</p>
+                    <p>
+                        <a href="{verification_link}" 
+                        style="display: inline-block; padding: 8px 16px; font-size: 16px;
+                                color: white; background-color: #007BFF; text-decoration: none;
+                                border-radius: 5px;">
+                            Verify Email
+                        </a>
+                    </p>
+                    <p>If the button doesn't work, you can also <a href="{verification_link}">click here</a>.</p>
+                    <p>Thank you!</p>
+                </body>
+             </html>
+             """
+
             email_message = EmailMessage(
                 "Verify your email",
-                f"Click this link to verify your account: {verification_link}",
+                email_body,
                 settings.EMAIL_HOST_USER,
                 [email],
                 connection=connection,
             )
+            email_message.content_subtype = "html"  # ✅ Set email format to HTML
             email_message.send()
-
+                    
             return Response({"message": "Verification email sent!"}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -97,7 +121,7 @@ class SendVerificationEmailView(APIView):
 class VerifyEmailView(APIView):
     permission_classes = [AllowAny]  # Allow anonymous access
 
-    def get(self, request, uidb64, token, username):
+    def get(self, request, uidb64, token, username,password):
         try:
             email = urlsafe_base64_decode(uidb64).decode()
 
@@ -109,7 +133,7 @@ class VerifyEmailView(APIView):
                 return Response({"error": "Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
             # ✅ Create & activate the user after verification
-            user = UserPishki.objects.create_user(username=username, email=email)
+            user = UserPishki.objects.create_user(username=username, email=email,password = password )
             user.is_active = True
             user.save()
 
