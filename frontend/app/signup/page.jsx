@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 
 export default function SignUpPage() {
   const router = useRouter();
-  const [formData, setFormData] = useState({ name: '', username: '', password: '', password2: '' });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '', password2: '' });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,21 +14,25 @@ export default function SignUpPage() {
 
   const handleSignUp = async () => {
     try {
-      const res = await fetch('http://localhost:8000/auth/sign-up', {
+      if(formData.password != formData.password2){
+        alert("Passwords don't match!",);
+        return;
+      }
+      const res = await fetch('http://localhost:8000/auth/sign-up/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           username: formData.username,
-          email: formData.username,
+          email: formData.email,
           password: formData.password,
         }),
       });
-
+      
       if (res.ok) {
-        router.push('/login');
+        alert("Verification email sent! Check your inbox.");
       } else {
-        const data = await res.json();
-        alert(`Error: ${JSON.stringify(data)}`);
+        const errorData = await res.json();
+        alert(`Error: ${errorData.error}`);
       }
     } catch (error) {
       console.error('Error during sign-up:', error);
@@ -43,19 +47,19 @@ export default function SignUpPage() {
         </h1>
 
         <input
-          name="name"
+          name="username"
           type="text"
           placeholder="Name"
-          value={formData.name}
+          value={formData.username}
           onChange={handleChange}
           className="border-2 border-gray-300 rounded-lg w-full px-4 py-2 mb-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 transition-all duration-300"
         />
 
         <input
-          name="username"
+          name="email"
           type="text"
-          placeholder="Username or Email"
-          value={formData.username}
+          placeholder="Email"
+          value={formData.email}
           onChange={handleChange}
           className="border-2 border-gray-300 rounded-lg w-full px-4 py-2 mb-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-300 transition-all duration-300"
         />
