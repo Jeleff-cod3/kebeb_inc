@@ -31,7 +31,9 @@ class Kebabs(models.Model):
 
 
 class Order(models.Model):
-    kebabs = models.ManyToManyField(Kebabs)  # Each order can have multiple kebabs
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    # Each order can have multiple kebabs
+    kebabs = models.ManyToManyField(Kebabs)
     total_price = models.FloatField(default=0)  # Store total price
 
     def calculate_total_price(self):

@@ -16,7 +16,7 @@ export default function HomePage() {
                     MENU
                 </button>
 
-                <div className="text-4xl font-bold flex items-center gap-2 mt-2">
+                <div className="text-4xl font-bold flex items-center justify-center gap-2 mt-2">
                     <Image src="/logo.png" width={355} height={175} alt="dragon logo" />
                 </div>
 
@@ -45,14 +45,34 @@ export default function HomePage() {
                         </p>
                     </div>
 
-                    <div className="bg-gray-200 rounded-xl shadow-xl p-4">
-                        <Image
-                            src="/kebab.jpg"
-                            width={300}
-                            height={400}
-                            alt="Person slicing kebab meat"
-                            className="rounded-xl object-cover"
-                        />
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="col-span-1">
+                            <Image
+                                src="/kebab1.jpg"
+                                width={150}
+                                height={150}
+                                alt="Kebab 1"
+                                className="rounded-xl object-cover"
+                            />
+                        </div>
+                        <div className="col-span-1">
+                            <Image
+                                src="/kebab2.jpg"
+                                width={150}
+                                height={150}
+                                alt="Kebab 2"
+                                className="rounded-xl object-cover"
+                            />
+                        </div>
+                        <div className="col-span-2 flex justify-center">
+                            <Image
+                                src="/kebab3.jpg"
+                                width={150}
+                                height={150}
+                                alt="Kebab 3"
+                                className="rounded-xl object-cover"
+                            />
+                        </div>
                     </div>
                 </div>
             </main>
