@@ -165,3 +165,14 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SLS = False
 EMAIL_HOST_USER = "m.panayotov.tech@gmail.com"
 EMAIL_HOST_PASSWORD = "nnfchtgznqnrjkia "
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=7),  # Increase access token lifespan
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),  # Extend refresh token lifespan
+    "ROTATE_REFRESH_TOKENS": True,  # Generate new refresh token on each refresh
+    "BLACKLIST_AFTER_ROTATION": True,  # Blacklist old refresh tokens
+    "UPDATE_LAST_LOGIN": True,  # Update last login time on refresh
+}
+
