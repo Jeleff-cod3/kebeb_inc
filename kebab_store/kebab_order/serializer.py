@@ -28,16 +28,17 @@ class KebabSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     kebabs = KebabSerializer(many=True)
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Order
-        fields = ['id', 'kebabs', 'total_price',]
+        fields = ['id', 'kebabs', 'total_price', 'user',]
 
     def create(self, validated_data):
         kebabs_data = validated_data.pop('kebabs', [])
-
+        user = self.context.get('user')
         # Create order without calling calculate_total_price
-        order = Order.objects.create()
+        order = Order.objects.create(user=user)
 
         # Create kebabs and add them to the order
         kebabs_created = []
