@@ -24,7 +24,10 @@ export default function SignUpPage() {
     try {
       const res = await fetch('http://localhost:8000/auth/sign-up', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json' 
+        },
         body: JSON.stringify({
           username: formData.username,
           email: formData.username, // Assuming username is the email

@@ -4,6 +4,7 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveUpdateAP
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from django.http import JsonResponse
 from django.utils.http import urlsafe_base64_decode
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -53,14 +54,17 @@ class SignUpView(CreateAPIView):
     serializer_class = UserRegisterSerializer1
     
     def create(self, request, *args, **kwargs):
-        response = super().create(request, *args, **kwargs)
-
-        if response.status_code == 201:  # Successful creation
-            return Response({
-                "detail": "User created successfully. Please check your email for verification."
-            }, status=status.HTTP_201_CREATED)
-        return response
-
+        try:
+            response = super().create(request, *args, **kwargs)
+            if response.status_code == 201:
+                return Response({
+                    "detail": "User created successfully. Please check your email for verification."
+                }, status=status.HTTP_201_CREATED)
+            return response
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
+        
+    
 class UserLoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
